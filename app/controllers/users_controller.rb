@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   def index
   	# !!! beware of 9'000'000 records - no pagination
-  	users = User.all
+  	users = User.all.select(:id, :username, :created_at)
   	render json: users
   end
 
