@@ -36,12 +36,7 @@ module Quiz
     
     config.hosts << "quiz.quarasique.ru"
 
-    # CORS 
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins '*'
-        resource '*', headers: :any, methods: [:get, :post, :options, :delete]
-      end
-    end
+    # Rack-attack
+    config.middleware.use Rack::Attack
   end
 end

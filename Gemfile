@@ -46,3 +46,4 @@ group :development, :test do
 end
 
 gem 'rack-cors'
+gem 'rack-attack'
