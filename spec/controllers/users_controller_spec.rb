@@ -1,4 +1,3 @@
-# TODO: DRY via shared modules
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
