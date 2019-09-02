@@ -1,9 +1,10 @@
 FactoryBot.define do
-	sequence(:user_seed) { |n| { username: "User#{n}", password: "password" } }
+	sequence(:username_seed) { |n| "User#{n}" }
 
   factory :user, class: User do
     username { "JohnDoe" }
     password { "StronkPassword" }
+    token { SecureRandom.base58(24) }
 
     trait :blank_username do 
     	username { " " * 3 }
@@ -24,6 +25,7 @@ FactoryBot.define do
     trait :invalid_confirmation do
     	password_confirmation { "NotStronkPassword" }
     end
+
   end
 
 end
