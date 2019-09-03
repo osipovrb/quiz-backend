@@ -1,16 +1,27 @@
 class ApplicationController < ActionController::API
 
+	# По ошибке авторизованный пользователь может попасть в зону,
+	# предназначенную только для неавторизованных гостей (регистрация 
+	# пользователя, авторизация, и т.п.). Этот метод не пропускает таких 
+	# пользователей. Используется в фильтре before_action
 	def require_guest
-		head(403) unless request.try(:authorization).nil?
+		unless request.try(:authorization).nil?
+			head(403) 
+			return false
+		end
 	end
 
+	# Не позволяет попасть неавторизованным гостям в зону,
+	# предназначенную для залогиненных пользователей. Также 
+	# делает доступной @user (текущий залогиненный пользователь) 
+	# в контроллере. Используется в фильтре before_action
 	def require_user
 		token, username = request.authorization.to_s.split(':', 2)
 		unless User.token_valid?(token)
 			head 400 
 			return false
 		end
-		unless @user ||= User.authenticate(username, token)
+		unless @user ||= User.authenticate_by_token(username, token)
 			head 401
 			return false
 		end

@@ -4,6 +4,10 @@ RSpec.describe UsersController, type: :controller do
 
   before { create :user, username: generate(:username_seed) }
 
+  let(:post_valid_user) do
+    post :create,  params: { user: attributes_for(:user, username: generate(:username_seed)) } 
+  end
+
   describe "GET #index" do
     it "returns all users" do
       get :index
@@ -15,14 +19,14 @@ RSpec.describe UsersController, type: :controller do
   describe "POST #create" do
     it "creates user with valid input" do
       initial_user_count = User.count
-      post :create,  params: { user: attributes_for(:user, username: generate(:username_seed)) }
+      post_valid_user
       expect(response).to have_http_status(201)
       expect(User.count).to eq (initial_user_count + 1)
     end
 
     it "rejects when authorization header is set" do
       request.headers['Authorization'] = "#{'a'*24}:JohnDoe"
-      post :create,  params: { user: attributes_for(:user, username: generate(:username_seed)) }
+      post_valid_user
       expect(response).to have_http_status(403)
     end
 

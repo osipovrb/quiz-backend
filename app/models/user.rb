@@ -5,7 +5,7 @@ class User < ApplicationRecord
   validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true
   validates :password, presence: true, length: { maximum: 72 }
 
-  def self.authenticate(username, token)
+  def self.authenticate_by_token(username, token)
   	return false unless User.token_valid?(token) 
   	User.find_by(username: username, token: token)
   end

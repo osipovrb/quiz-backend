@@ -1,6 +1,7 @@
 class AuthorizationController < ApplicationController
 
-  before_action  :require_user, only: :logout
+  before_action :require_guest, only: :login
+  before_action :require_user, only: :logout
 
   def login # post /users/login
     user = User.find_by_username params[:username]
