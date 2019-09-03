@@ -61,13 +61,12 @@ RSpec.describe UsersController, type: :controller do
 
       it "destroys token when user is logged in" do
         user = create(:user)
-        post :login, params: { username: user.username, password: user.password }
-        token = JSON.parse(response.body)[:token]
         request.headers['Authorization'] = "#{user.token}:#{user.username}" 
         delete :logout
+        old_token = user.token
+        new_token = user.reload.token
+        expect(old_token).not_to eq new_token
         expect(response).to have_http_status(204)
-        user.reload
-        expect(user.token).to be_blank
       end
     end
   end
