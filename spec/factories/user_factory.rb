@@ -23,7 +23,7 @@ FactoryBot.define do
     end
 
     trait :invalid_confirmation do
-    	password_confirmation { "NotStronkPassword" }
+    	password_confirmation { "NotConfirmedPassword" }
     end
 
   end

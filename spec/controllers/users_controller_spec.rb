@@ -2,9 +2,7 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
 
-  before do
-    10.times { create :user, username: generate(:username_seed) } 
-  end
+  before { create :user, username: generate(:username_seed) }
 
   describe "GET #index" do
     it "returns all users" do
@@ -16,14 +14,15 @@ RSpec.describe UsersController, type: :controller do
 
   describe "POST #create" do
     it "creates user with valid input" do
-      user_count = User.count + 1
-      post :create,  params: { user: attributes_for(:user) }
+      initial_user_count = User.count
+      post :create,  params: { user: attributes_for(:user, username: generate(:username_seed)) }
       expect(response).to have_http_status(201)
-      expect(User.count).to eq user_count
+      expect(User.count).to eq (initial_user_count + 1)
     end
 
+    # traits with invalid input
     FactoryBot.factories[:user].definition.defined_traits.map(&:name).each do |trait_name| 
-      it "fails with #{trait_name}" do
+      it "fails to create with #{trait_name}" do
         post :create,  params: { user: attributes_for(:user, trait_name) }
         expect(response).to have_http_status(422)
       end
@@ -48,7 +47,7 @@ RSpec.describe UsersController, type: :controller do
       end
 
       it "fails to log in wrong user" do
-        post :login, params: { user: attributes_for(:user) }
+        post :login, params: { user: attributes_for(:user, username: generate(:username_seed)) }
         expect(response).to have_http_status(401)
       end
     end
@@ -61,12 +60,11 @@ RSpec.describe UsersController, type: :controller do
 
       it "destroys token when user is logged in" do
         user = create(:user)
-        request.headers['Authorization'] = "#{user.token}:#{user.username}" 
+        token = user.token
+        request.headers['Authorization'] = "#{token}:#{user.username}" 
         delete :logout
-        old_token = user.token
-        new_token = user.reload.token
-        expect(old_token).not_to eq new_token
         expect(response).to have_http_status(204)
+        expect(token).not_to eq user.reload.token
       end
     end
   end
