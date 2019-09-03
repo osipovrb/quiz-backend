@@ -35,9 +35,9 @@ RSpec.describe AuthorizationController, type: :controller do
   end
 
   describe "DELETE #logout" do
-    it "rejects when user is not logged in" do
+    it "reqire authorization when user is not logged in" do
       delete :logout
-      expect(response).to have_http_status(400) 
+      expect(response).to have_http_status(401) 
     end
 
     it "rejects with malicious token" do

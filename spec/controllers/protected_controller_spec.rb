@@ -9,9 +9,9 @@ RSpec.describe ProtectedController, type: :controller do
         expect(response).to have_http_status(401)
     end
 
-    it "rejects when authorization header is not set" do
+    it "reqire authorization when authorization header is not set" do
     	get :index
-    	expect(response).to have_http_status(400)
+    	expect(response).to have_http_status(401)
     end
 
     it "rejects malicious token" do
