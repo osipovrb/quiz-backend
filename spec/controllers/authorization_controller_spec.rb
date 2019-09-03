@@ -31,9 +31,6 @@ RSpec.describe AuthorizationController, type: :controller do
       set_authorization_header
       post_valid_user
       expect(response).to have_http_status(403)
-      set_authorization_header
-      post_invalid_user
-      expect(response).to have_http_status(403)
     end
   end
 
