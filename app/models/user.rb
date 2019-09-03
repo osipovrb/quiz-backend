@@ -7,11 +7,11 @@ class User < ApplicationRecord
 
   def self.authenticate(username, token)
   	return false unless User.token_valid?(token) 
-  	User.where(token: token)
+  	User.find_by(username: username, token: token)
   end
 
   def self.token_valid?(token)
-  	token && token =~ /[\d[a-zA-Z][^0OIl]]{24}/
+  	(token =~ /^[\d[a-zA-Z][^0OIl]]{24}$/) ? true : false
   end
 
 end

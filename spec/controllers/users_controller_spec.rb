@@ -25,6 +25,7 @@ RSpec.describe UsersController, type: :controller do
       it "fails to create with #{trait_name}" do
         post :create,  params: { user: attributes_for(:user, trait_name) }
         expect(response).to have_http_status(422)
+        expect(response.body.blank?).not_to eq true
       end
     end
   end
@@ -34,38 +35,6 @@ RSpec.describe UsersController, type: :controller do
       delete :drop
       expect(response).to have_http_status(204)
       expect(response.body.blank?).to eq true
-    end
-  end
-
-  context "Login & logout" do
-    describe "POST #login" do
-      it "logs in valid user and returns token" do
-        user = create(:user)
-        post :login, params: { username: user.username, password: user.password }
-        expect(response).to have_http_status(200)
-        expect(JSON.parse(response.body)).to eq ({ "token" => user.token, "username" => user.username })
-      end
-
-      it "fails to log in wrong user" do
-        post :login, params: { user: attributes_for(:user, username: generate(:username_seed)) }
-        expect(response).to have_http_status(401)
-      end
-    end
-
-    describe "DELETE #logout" do
-      it "rejects when user is not logged in" do
-        delete :logout
-        expect(response).to have_http_status(401)
-      end
-
-      it "destroys token when user is logged in" do
-        user = create(:user)
-        token = user.token
-        request.headers['Authorization'] = "#{token}:#{user.username}" 
-        delete :logout
-        expect(response).to have_http_status(204)
-        expect(token).not_to eq user.reload.token
-      end
     end
   end
 

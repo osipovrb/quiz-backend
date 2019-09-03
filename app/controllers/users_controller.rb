@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 
-  before_action  :require_user, only: :logout
+  before_action :require_guest, only: :create
 
   def index # get /users
   	users = User.all.select(:id, :username, :created_at).limit(100)
@@ -13,28 +13,17 @@ class UsersController < ApplicationController
   	if user.valid? && user.save
   		head 201
   	else
-  		head 422
+      render json: user.errors.full_messages, status: 422
   	end
   end
 
   def drop # delete /users/drop
   	# !!! любой может вызвать этот метод
-  	User.destroy_all
-  	head 204
-  end
-
-  def login # post /users/login
-    user = User.find_by_username params[:username]
-    if user && user.authenticate(params[:password])
-      render json: { token: user.token, username: user.username }
+  	if User.destroy_all
+  	  head 204
     else
-      head 401
+      head 500
     end
-  end
-
-  def logout # delete /users/logout
-    @user.update_attribute(:token, User.generate_unique_secure_token)
-    head 204
   end
 
 end
