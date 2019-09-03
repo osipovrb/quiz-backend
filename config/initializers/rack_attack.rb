@@ -20,10 +20,10 @@ class Rack::Attack
     end
   end
 
-  # Authorization (post /sessions)
+  # Authorization (post /users/login)
 
-  throttle("sessions/username", limit: 10, period: 20.seconds) do |req|
-    if req.path == '/sessions' && req.post?
+  throttle("/users/login", limit: 10, period: 20.seconds) do |req|
+    if req.path == '/users/login' && req.post?
       req.params['username'].presence
     end
   end

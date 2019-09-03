@@ -20,13 +20,13 @@ class UsersController < ApplicationController
   def drop # delete /users/drop
   	# !!! любой может вызвать этот метод
   	User.destroy_all
-  	head 200
+  	head 204
   end
 
   def login # post /users/login
     user = User.find_by_username params[:username]
     if user && user.authenticate(params[:password])
-      render json: { username: user.username, token: user.token }
+      render json: { token: user.token, username: user.username }
     else
       head 401
     end
@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 
   def logout # delete /users/logout
     @user.update_attribute(:token, '')
-    head 200
+    head 204
   end
 
 end

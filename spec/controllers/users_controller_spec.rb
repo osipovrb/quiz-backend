@@ -10,15 +10,16 @@ RSpec.describe UsersController, type: :controller do
     it "returns all users" do
       get :index
       expect(response).to have_http_status(200)
-      expect(User.count).to eq 10
-      expect(JSON.parse(response.body).count).to eq 10
+      expect(JSON.parse(response.body).count).to eq User.count
     end
   end
 
   describe "POST #create" do
     it "creates user with valid input" do
+      user_count = User.count + 1
       post :create,  params: { user: attributes_for(:user) }
       expect(response).to have_http_status(201)
+      expect(User.count).to eq user_count
     end
 
     FactoryBot.factories[:user].definition.defined_traits.map(&:name).each do |trait_name| 
@@ -32,7 +33,7 @@ RSpec.describe UsersController, type: :controller do
   describe "DELETE #drop" do
     it "deletes all users" do
       delete :drop
-      expect(response).to have_http_status(200)
+      expect(response).to have_http_status(204)
       expect(response.body.blank?).to eq true
     end
   end
@@ -43,7 +44,7 @@ RSpec.describe UsersController, type: :controller do
         user = create(:user)
         post :login, params: { username: user.username, password: user.password }
         expect(response).to have_http_status(200)
-        expect(JSON.parse(response.body)).to eq ({ "username" => user.username, "token" => user.token })
+        expect(JSON.parse(response.body)).to eq ({ "token" => user.token, "username" => user.username })
       end
 
       it "fails to log in wrong user" do
@@ -64,7 +65,7 @@ RSpec.describe UsersController, type: :controller do
         token = JSON.parse(response.body)[:token]
         request.headers['Authorization'] = "#{user.token}:#{user.username}" 
         delete :logout
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(204)
         user.reload
         expect(user.token).to be_blank
       end
