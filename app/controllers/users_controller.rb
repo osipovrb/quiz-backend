@@ -26,6 +26,7 @@ class UsersController < ApplicationController
   def login # post /users/login
     user = User.find_by_username params[:username]
     if user && user.authenticate(params[:password])
+      user.regenerate_token if user.token.blank?
       render json: { token: user.token, username: user.username }
     else
       head 401
