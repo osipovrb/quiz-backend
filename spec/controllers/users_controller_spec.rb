@@ -20,6 +20,12 @@ RSpec.describe UsersController, type: :controller do
       expect(User.count).to eq (initial_user_count + 1)
     end
 
+    it "rejects when authorization header is set" do
+      request.headers['Authorization'] = "#{'a'*24}:JohnDoe"
+      post :create,  params: { user: attributes_for(:user, username: generate(:username_seed)) }
+      expect(response).to have_http_status(403)
+    end
+
     # traits with invalid input
     FactoryBot.factories[:user].definition.defined_traits.map(&:name).each do |trait_name| 
       it "fails to create with #{trait_name}" do
