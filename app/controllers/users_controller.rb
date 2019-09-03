@@ -26,7 +26,6 @@ class UsersController < ApplicationController
   def login # post /users/login
     user = User.find_by_username params[:username]
     if user && user.authenticate(params[:password])
-      user.regenerate_token if user.token.blank?
       render json: { token: user.token, username: user.username }
     else
       head 401
@@ -34,7 +33,7 @@ class UsersController < ApplicationController
   end
 
   def logout # delete /users/logout
-    @user.update_attribute(:token, '')
+    @user.update_attribute(:token, User.generate_unique_secure_token)
     head 204
   end
 
