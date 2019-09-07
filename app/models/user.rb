@@ -2,6 +2,9 @@ class User < ApplicationRecord
   has_secure_password
   has_secure_token
 
+  has_one :chat_member
+  has_many :chat_messages
+
   validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true
   validates :password, presence: true, length: { maximum: 72 }
 
