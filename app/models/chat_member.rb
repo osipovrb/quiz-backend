@@ -10,4 +10,8 @@ class ChatMember < ApplicationRecord
   	ChatMember.delete_by(user_id: user.id)
   	UsersAppearancesBroadcastJob.perform_later(user.username, :leave)
   end
+
+  def self.subscribed?(user)
+  	(ChatMember.find_by_id(user.id)) ? true : false
+  end
 end
