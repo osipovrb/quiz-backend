@@ -6,7 +6,7 @@ class Rack::Attack
 
   # All requests
 
-  throttle('req/ip', limit: 30, period: 60.seconds) do |req|
+  throttle('req/ip', limit: 60, period: 60.seconds) do |req|
     req.ip # unless req.path.start_with?('/assets')
   end
 
@@ -20,12 +20,19 @@ class Rack::Attack
     end
   end
 
-  # Authorization (post /users/login)
+  # Authorization (post /login)
 
-  throttle("/users/login", limit: 10, period: 20.seconds) do |req|
-    if req.path == '/users/login' && req.post?
+  throttle('login/username', limit: 10, period: 20.seconds) do |req|
+    if req.path == '/login' && req.post?
       req.params['username'].presence
     end
   end
-  
+
+  # Session check (get /session)
+  throttle('session/ip', limit: 20, period: 10.seconds) do |req|
+    if req.path == '/session' 
+      req.ip
+    end
+  end
+
 end
