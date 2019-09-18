@@ -50,3 +50,4 @@ end
 
 gem 'rack-cors'
 gem 'rack-attack'
+gem 'redis'
