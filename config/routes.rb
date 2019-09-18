@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
 
-  get 'chat_messages/create'
 	resources :users, only: [:index, :create] do
 		delete 'drop', on: :collection
 	end
