@@ -3,8 +3,7 @@ module ApplicationCable
   	identified_by :current_user
 
     def connect
-      # self.current_user = find_user
-      self.current_user = User.first
+      self.current_user = find_user
     end
 
     private

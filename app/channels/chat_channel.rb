@@ -9,6 +9,6 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def message(data)
-    ChatMessage.create(user: current_user, content: data['message'])
+    ChatMessage.create(user: current_user, content: data['content'])
   end
 end

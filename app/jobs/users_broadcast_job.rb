@@ -1,4 +1,4 @@
-class UsersAppearancesBroadcastJob < ApplicationJob
+class UsersBroadcastJob < ApplicationJob
   queue_as :default
 
   def perform(username, event) # type = join || leave

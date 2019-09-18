@@ -1,8 +1,8 @@
-class UsersAppearancesChannel < ApplicationCable::Channel
+class UsersChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "users"
     members = ChatMember.includes(:user).pluck(:username)
     broadcast_to current_user, members.to_json
+    stream_from "users"
   end
 
   def unsubscribed

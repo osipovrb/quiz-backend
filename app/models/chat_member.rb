@@ -3,12 +3,12 @@ class ChatMember < ApplicationRecord
 
   def self.subscribe(user)
 		ChatMember.find_or_create_by(user_id: user.id)
-  	UsersAppearancesBroadcastJob.perform_later(user.username, :join)
+  	UsersBroadcastJob.perform_later(user.username, :join)
   end
 
   def self.unsubscribe(user)
   	ChatMember.delete_by(user_id: user.id)
-  	UsersAppearancesBroadcastJob.perform_later(user.username, :leave)
+  	UsersBroadcastJob.perform_later(user.username, :leave)
   end
 
   def self.subscribed?(user)

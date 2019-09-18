@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe UsersAppearancesChannel, type: :channel do
+RSpec.describe UsersChannel, type: :channel do
   it "subscribes and streams from users" do
     user = create(:user)
     stub_connection current_user: user
