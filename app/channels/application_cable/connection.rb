@@ -9,7 +9,7 @@ module ApplicationCable
     private
       def find_user
       	token, username = request.authorization.to_s.split(':', 2)
-        if User.token_valid?(token) && user = User.authenticate_by_token(token: token, username: username)
+        if User.token_valid?(token) && user = User.authenticate_by_token(username, token)
           user
         else
           reject_unauthorized_connection

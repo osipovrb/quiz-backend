@@ -5,11 +5,9 @@ Rails.application.routes.draw do
 		delete 'drop', on: :collection
 	end
 
-	get 'protected/index', to: 'protected#index'
-	get 'protected/echo', to: 'protected#echo'
-
 	post 'login', to: 'authorization#login'
 	delete 'logout', to: 'authorization#logout'
+	get 'session', to: 'authorization#session'
 
 	mount ActionCable.server => '/cable'
 
