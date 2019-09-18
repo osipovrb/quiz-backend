@@ -58,7 +58,6 @@ Rails.application.configure do
   end
 
   # cable settings
-  config.action_cable.url = "wss://quiz.quarasique.ru/cable/"
+  #config.action_cable.url = "ws://quiz.quarasique.ru/cable/"
   ActionCable.server.config.disable_request_forgery_protection = true
-  ActionCable.server.config.allowed_request_origins = %w( wss://quiz.quarasique.ru/ wss://quarasique.ru/ )
 end
