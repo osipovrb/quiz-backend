@@ -8,7 +8,8 @@ module ApplicationCable
 
     private
       def find_user
-      	token, username = request.authorization.to_s.split(':', 2)
+      	token = request.params[:token]
+        username = request.params[:username]
         if User.token_valid?(token) && user = User.authenticate_by_token(username, token)
           user
         else
