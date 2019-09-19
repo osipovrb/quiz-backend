@@ -4,7 +4,9 @@ RSpec.describe ChatMessageBroadcastJob, type: :job do
 	before { ActiveJob::Base.queue_adapter = :test }
   describe "#perform_now" do
   	it "should broadcast message" do 
-  		message = ChatMessage.create(user: create(:user), content: "Chat message")
+      user = create(:user)
+      ChatMember.subscribe(user)
+  		message = ChatMessage.create!(user: user, content: "Chat message")
   		expected_payload = { 
         message: message.content, 
         username: message.user.username, 
