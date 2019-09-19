@@ -2,7 +2,7 @@ class ChatChannel < ApplicationCable::Channel
   def subscribed
     ChatMember.subscribe(current_user)
     # send last 30 message after subscription
-    last_messages = ChatMessage.includes(:user).limit(30).order(:desc)
+    last_messages = ChatMessage.includes(:user).limit(30).order(id: :desc)
     payload = last_messages.map do |m|
       {
         content: m.content,
