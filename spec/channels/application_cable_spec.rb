@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe ApplicationCable::Connection, type: :channel do
   it "successfully connects" do
   	user = create(:user)
-    connect "/cable", headers: { "Authorization" => "#{user.token}:#{user.username}" }
+    connect "/cable?token=#{user.token}&username=#{user.username}"
     expect(connection.current_user.id).to eq user.id
   end
 
