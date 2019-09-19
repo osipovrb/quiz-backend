@@ -38,5 +38,8 @@ module Quiz
 
     # Rack-attack
     config.middleware.use Rack::Attack
+
+    # Active Job
+    config.active_job.queue_adapter = :async
   end
 end

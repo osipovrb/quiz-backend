@@ -5,7 +5,7 @@ class User < ApplicationRecord
   has_one :chat_member
   has_many :chat_messages
 
-  validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true
+  validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true, exclusion: { in: %w(Ведущий) }
   validates :password, presence: true, length: { maximum: 72 }
 
   def self.authenticate_by_token(username, token)
