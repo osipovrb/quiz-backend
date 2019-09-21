@@ -1,5 +1,5 @@
 class ChatMember < ApplicationRecord
-  belongs_to :user, dependent: :destroy
+  belongs_to :user
 
   after_create { UsersBroadcastJob.perform_later(user.username, :join) if connections_num == 0 }
   after_destroy { UsersBroadcastJob.perform_later(user.username, :leave) }
