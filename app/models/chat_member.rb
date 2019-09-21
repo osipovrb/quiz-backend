@@ -26,10 +26,10 @@ class ChatMember < ApplicationRecord
 
   private
     def quizz_start_stop
-      if ChatMember.blank?
-        Quizz.stop
-      elsif !Quizz.running?
+      if ChatMember.any?
         Quizz.start
+      else
+        Quizz.stop
       end
     end
 end
