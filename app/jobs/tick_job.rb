@@ -5,12 +5,9 @@ class TickJob < ApplicationJob
     redis = Redis.new
     terminate = false
     while !terminate do
-      redis.publish(:quiz, 'tick')
-      if redis.get('tick') == 'stop'
-        redis.set('tick', '')
-        terminate = true
-      end
       sleep 1
+      redis.publish(:quiz, 'tick')
+      terminate = true unless Quizz.running?
     end
   end
 

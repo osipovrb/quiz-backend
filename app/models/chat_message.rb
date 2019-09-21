@@ -1,20 +1,12 @@
 class ChatMessage < ApplicationRecord
-  belongs_to :user, dependent: :destroy
+  belongs_to :user
 
   validates :content, presence: true, length: { maximum: 500 }
-  # validate :chat_subscription
+  validate :chat_subscription
 
   after_create_commit do
-    ChatMessageBroadcastJob.perform_later(self)
-    redis = Redis.new
-    if content == '/start_quiz'
-      QuizzJob.perform_later
-      TickJob.perform_later
-    elsif content == '/stop_quiz'
-      redis.publish(:quiz, 'exit')
-      redis.set('tick', 'stop')
-    end
-    redis.publish(:quiz, "chat_message:#{user_id}:#{content}")  
+    ChatMessageBroadcastJob.perform_later(id)
+    Redis.new.publish(:quiz, "chat_message:#{user.id}:#{content}")  
   end
 
   private

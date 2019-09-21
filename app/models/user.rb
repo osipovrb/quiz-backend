@@ -2,8 +2,8 @@ class User < ApplicationRecord
   has_secure_password
   has_secure_token
 
-  has_one :chat_member
-  has_many :chat_messages
+  has_one :chat_member, dependent: :destroy
+  has_many :chat_messages, dependent: :destroy
 
   validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true, exclusion: { in: %w(Ведущий) }
   validates :password, presence: true, length: { maximum: 72 }

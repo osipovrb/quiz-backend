@@ -1,9 +1,10 @@
 class ChatMessageBroadcastJob < ApplicationJob
   queue_as :default
 
-  def perform(message)
+  def perform(message_id)
+    message = ChatMessage.find(message_id)
   	payload = { 
-  		message: message.content, 
+  		content: message.content, 
   		username: message.user.username, 
   		created_at: message.created_at.utc.to_i
   	}

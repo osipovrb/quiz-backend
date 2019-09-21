@@ -8,12 +8,12 @@ RSpec.describe ChatMessageBroadcastJob, type: :job do
       ChatMember.subscribe(user)
   		message = ChatMessage.create!(user: user, content: "Chat message")
   		expected_payload = { 
-        message: message.content, 
+        content: message.content, 
         username: message.user.username, 
         created_at: message.created_at.utc.to_i
       }.to_json
       expect {
-        ChatMessageBroadcastJob.perform_now(message)
+        ChatMessageBroadcastJob.perform_now(message.id)
       }.to have_broadcasted_to("chat").with(expected_payload)
   	end
   end

@@ -50,6 +50,25 @@ class Quizz
     end
   end
 
+  # Start/stop methods
+  def self.start
+    return if Quizz.running?
+    Redis.new.set 'quiz', 'running'
+    QuizzJob.perform_later
+    TickJob.perform_later
+  end
+
+  def self.stop
+    return unless Quizz.running?
+    r = Redis.new
+    r.publish :quiz, 'stop'
+    r.set 'quiz', 'stopped'
+  end
+
+  def self.running?
+    Redis.new.get('quiz') == 'running'
+  end
+
   private
     def send_message(content)
       ChatMessage.create(user: @host_user, content: content)

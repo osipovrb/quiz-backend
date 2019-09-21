@@ -14,7 +14,7 @@ RSpec.describe ChatMessage, type: :model do
 			user = create :user
 			ChatMember.subscribe user
 			message = ChatMessage.create(user: user, content: "Some Message")
-			expect(ChatMessageBroadcastJob).to have_been_enqueued.with(message)
+			expect(ChatMessageBroadcastJob).to have_been_enqueued.with(message.id)
 		end
 
 		it "should not be valid when user is not subscribed to a chat" do
