@@ -28,7 +28,7 @@ class ChatMember < ApplicationRecord
     def quizz_start_stop
       if ChatMember.any?
         Quizz.start
-      else
+      elsif Quizz.running?
         Quizz.stop
       end
     end

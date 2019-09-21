@@ -67,7 +67,8 @@ class Quizz
   end
 
   def self.running?
-    Redis.new.get('quiz') == 'running'
+    r = Redis.new
+    r.get('quiz') == 'running'
   end
 
   private
