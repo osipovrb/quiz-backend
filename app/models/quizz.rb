@@ -4,9 +4,7 @@ class Quizz
     @host_user = init_host_user
     ChatMember.subscribe(@host_user) unless ChatMember.subscribed?(@host_user)
     # TODO: заглушка
-    @current_question = Question.new
-    @current_question.question = "Как громко пердит сова?"
-    @current_question.answer = "оглушающе"
+    @current_question = Riddle.get_random_riddle
     @timer = 5
     @state = :waiting_for_question
   end
@@ -14,11 +12,14 @@ class Quizz
   def process(message)
     if message.start_with?('exit')
       ChatMember.unsubscribe(@host_user)
-    elsif message.start_with?('chat_message')
+    elsif message.start_with?('chat_message') && @state == :accepting_answers
       _, user_id, content = message.split(':', 3)
       check_answer(user_id, content)
     elsif message == 'tick'
-      if @timer == 0
+      if @timer == 30 && @state == :accepting_answers
+        send_message(hint_message)
+        @timer -= 1
+      elsif @timer == 0
         if @state == :waiting_for_question
           # TODO: тащить новые @current_question
           send_message(question_message)
@@ -28,6 +29,7 @@ class Quizz
           send_message(timeout_message)
           @state = :waiting_for_question
           @timer = 5
+          @current_question = Riddle.get_random_riddle
         end
       else
         @timer -= 1
@@ -42,7 +44,7 @@ class Quizz
 
   def check_answer(user_id, answer)
     return nil if @current_question.nil?
-    if @current_question.answer == answer.strip
+    if @current_question.answer == answer.strip.downcase
       username = User.find_by_id(user_id).try(:username)
       send_message(correct_answer_message(username))
       @state = :waiting_for_question
@@ -52,14 +54,13 @@ class Quizz
 
   # Start/stop methods
   def self.start
-    return if Quizz.running?
+    Quizz.stop if Quizz.running?
     Redis.new.set 'quiz', 'running'
     QuizzJob.perform_later
     TickJob.perform_later
   end
 
   def self.stop
-    return unless Quizz.running?
     r = Redis.new
     r.publish :quiz, 'stop'
     r.set 'quiz', 'stopped'
@@ -90,8 +91,8 @@ class Quizz
     end
 
     def hint_message
-      filler = ' _' * (@current_question.answer.length-1)
-      hint = "#{@current_question.answer[0]}#{filler}"
+      filler = ' _' * (@current_question.answer.length-2)
+      hint = "#{@current_question.answer[0]} #{@current_question.answer[1]}#{filler}"
       "Подсказка: #{hint}"
     end
 
