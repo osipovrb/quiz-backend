@@ -9,7 +9,7 @@ class UsersChannel < ApplicationCable::Channel
 
   private
     def broadcast_all_members
-      members = ChatMember.includes(:user).pluck(:username)
+      members = ChatMember.includes(:user).pluck(:username, :score)
       stream_for current_user
       broadcast_to current_user, members.to_json
     end
