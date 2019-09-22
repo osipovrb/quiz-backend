@@ -45,11 +45,11 @@ class Quizz
   def check_answer(user_id, answer)
     return nil if @current_question.nil?
     if @current_question.answer == answer.strip.downcase
-      plus_score = (@timer > 30 ) ? 2 : 1
       user = User.find_by_id(user_id)
-      user.score += plus_score
-      user.save
-      send_message(correct_answer_message(user.username, plus_score, user.score))
+      plus_score = (@timer > 30 ) ? 2 : 1
+      score = user.score + plus_score
+      user.update_attribute(:score, score)
+      send_message(correct_answer_message(user.username, plus_score, score))
       send_score_update(user.username, user.score)
       @current_question = Riddle.get_random_riddle
       @state = :waiting_for_question
