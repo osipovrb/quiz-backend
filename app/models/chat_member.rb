@@ -6,7 +6,7 @@ class ChatMember < ApplicationRecord
 		member = ChatMember.find_or_create_by(user_id: user.id)
     member.connections_num += 1
     member.save
-    UsersBroadcastJob.perform_later(user.username, :join) if member.connections_num == 1
+    UsersBroadcastJob.perform_later(user.username, :join, user.score) if member.connections_num == 1
     Quizz.start if self.only_one_user_exists?
   end
 
@@ -14,8 +14,8 @@ class ChatMember < ApplicationRecord
     if member = find_by(user_id: user.id)
       if (member.connections_num -= 1) <= 0
     	  member.destroy
-        UsersBroadcastJob.perform_later(user.username, :leave) 
-        Quizz.stop if only_host_user_exists?
+        UsersBroadcastJob.perform_later(user.username, :leave, user.score) 
+        Quizz.stop if self.only_host_user_exists?
       else
         member.save
       end

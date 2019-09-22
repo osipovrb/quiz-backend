@@ -16,7 +16,7 @@ class Quizz
       _, user_id, content = message.split(':', 3)
       check_answer(user_id, content)
     elsif message == 'tick'
-      if @timer == 30 && @state == :accepting_answers
+      if @timer == 30 && @state == :accepting_answers && @current_question.answer.length >= 3
         send_message(hint_message)
         @timer -= 1
       elsif @timer == 0
@@ -45,8 +45,12 @@ class Quizz
   def check_answer(user_id, answer)
     return nil if @current_question.nil?
     if @current_question.answer == answer.strip.downcase
-      username = User.find_by_id(user_id).try(:username)
-      send_message(correct_answer_message(username))
+      plus_score (@timer > 30 ) ? 2 : 1
+      user = User.find_by_id(user_id)
+      user.score += plus_score
+      user.save
+      send_message(correct_answer_message(user.username, plus_score, user.score))
+      send_score_update(user.username, user.score)
       @current_question = Riddle.get_random_riddle
       @state = :waiting_for_question
       @timer = 5
@@ -75,6 +79,10 @@ class Quizz
       ChatMessage.create(user: @host_user, content: content)
     end
 
+    def send_score_update(username, score)
+      UsersBroadcastJob.perform_later(username, :score, score)
+    end
+
     def init_host_user
       host = User.find_by_username("Ведущий")
       if host.nil?
@@ -96,8 +104,9 @@ class Quizz
       "Подсказка: #{hint}"
     end
 
-    def correct_answer_message(username)
-      "#{username}, правильно! Верный ответ: #{@current_question.answer}. Следующий вопрос через 5 секунд..."
+    def correct_answer_message(username, score, total_score)
+      score = (score == 2) ? "2 очка" : "1 очко"
+      "#{username}, правильно! + #{score} (всего очков: #{total_score}). Верный ответ: #{@current_question.answer}. Следующий вопрос через 5 секунд..."
     end
 
     def timeout_message

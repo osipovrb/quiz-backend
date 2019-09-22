@@ -19,7 +19,7 @@ RSpec.describe ChatMember, type: :model do
 		it "should enqueue a job after user subscription" do
 			subscribe_once
 			expect(ChatMember.subscribed?(@user)).to eq true
-			expect(UsersBroadcastJob).to have_been_enqueued.with(@user.username, :join)
+			expect(UsersBroadcastJob).to have_been_enqueued.with(@user.username, :join, @user.score)
 		end
 
 		it "should increment connections_num after second subscription" do
@@ -31,14 +31,14 @@ RSpec.describe ChatMember, type: :model do
 			subscribe_twice
 			unsubscribe_once
 			expect(ChatMember.find_by(user: @user).connections_num).to eq 1
-			expect(UsersBroadcastJob).not_to have_been_enqueued.with(@user.username, :leave)
+			expect(UsersBroadcastJob).not_to have_been_enqueued.with(@user.username, :leave, @user.score)
 		end
 
 		it "should enqueue job when user leaves and no connections are left" do
 			subscribe_twice
 			unsubscribe_twice
 			expect(ChatMember.subscribed?(@user)).to eq false
-			expect(UsersBroadcastJob).to have_been_enqueued.with(@user.username, :leave)
+			expect(UsersBroadcastJob).to have_been_enqueued.with(@user.username, :leave, @user.score)
 		end
 
 		it "should enqueue QuizzJob after user subscription" do

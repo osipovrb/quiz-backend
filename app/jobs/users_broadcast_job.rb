@@ -1,8 +1,8 @@
 class UsersBroadcastJob < ApplicationJob
   queue_as :default
 
-  def perform(username, event) # type = join || leave
-  	payload = { event: event, username: username }
+  def perform(username, event, score) # type = join || leave || score
+  	payload = { event: event, username: username, score: score }
     ActionCable.server.broadcast "users", payload.to_json
   end
 end

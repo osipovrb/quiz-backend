@@ -2,7 +2,7 @@ class ChatMessage < ApplicationRecord
   belongs_to :user
 
   validates :content, presence: true, length: { maximum: 500 }
-  #validate :chat_subscription
+  validate :chat_subscription
 
   after_create_commit do
     ChatMessageBroadcastJob.perform_later(id)
