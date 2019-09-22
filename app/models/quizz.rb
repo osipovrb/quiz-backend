@@ -45,7 +45,7 @@ class Quizz
   def check_answer(user_id, answer)
     return nil if @current_question.nil?
     if @current_question.answer == answer.strip.downcase
-      plus_score (@timer > 30 ) ? 2 : 1
+      plus_score = (@timer > 30 ) ? 2 : 1
       user = User.find_by_id(user_id)
       user.score += plus_score
       user.save
