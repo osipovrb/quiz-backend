@@ -47,6 +47,7 @@ class Quizz
     if @current_question.answer == answer.strip.downcase
       username = User.find_by_id(user_id).try(:username)
       send_message(correct_answer_message(username))
+      @current_question = Riddle.get_random_riddle
       @state = :waiting_for_question
       @timer = 5
     end
