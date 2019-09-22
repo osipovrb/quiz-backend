@@ -11,7 +11,7 @@ class ChatMessage < ApplicationRecord
 
   private
   	def chat_subscription
-  		if user.nil? || !ChatMember.subscribed?(user) 
+  		if user.nil? || !ChatMember.subscribed?(self.user) 
  				errors.add(:user, "not subscribed to a chat")
  			end
   	end
