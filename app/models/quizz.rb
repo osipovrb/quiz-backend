@@ -10,7 +10,7 @@ class Quizz
   end
 
   def process(message)
-    if message.start_with?('exit')
+    if message.start_with?('stop')
       ChatMember.unsubscribe(@host_user)
     elsif message.start_with?('chat_message') && @state == :accepting_answers
       _, user_id, content = message.split(':', 3)
@@ -54,7 +54,6 @@ class Quizz
 
   # Start/stop methods
   def self.start
-    Quizz.stop if Quizz.running?
     Redis.new.set 'quiz', 'running'
     QuizzJob.perform_later
     TickJob.perform_later
@@ -67,8 +66,7 @@ class Quizz
   end
 
   def self.running?
-    r = Redis.new
-    r.get('quiz') == 'running'
+    Redis.new.get('quiz') == 'running'
   end
 
   private

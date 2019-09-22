@@ -1,22 +1,24 @@
 class ChatMember < ApplicationRecord
   belongs_to :user
 
-  after_create { UsersBroadcastJob.perform_later(user.username, :join) if connections_num == 0 }
-  after_destroy { UsersBroadcastJob.perform_later(user.username, :leave) }
-  after_commit { quizz_start_stop }
 
   def self.subscribe(user)
 		member = ChatMember.find_or_create_by(user_id: user.id)
     member.connections_num += 1
     member.save
+    UsersBroadcastJob.perform_later(user.username, :join) if member.connections_num == 1
+    Quizz.start if self.only_one_user_exists?
   end
 
   def self.unsubscribe(user)
-    member = find_by(user_id: user.id)
-    if (member.connections_num -= 1) <= 0
-  	  member.destroy
-    else
-      member.save
+    if member = find_by(user_id: user.id)
+      if (member.connections_num -= 1) <= 0
+    	  member.destroy
+        UsersBroadcastJob.perform_later(user.username, :leave) 
+        Quizz.stop if only_host_user_exists?
+      else
+        member.save
+      end
     end
   end
 
@@ -24,12 +26,12 @@ class ChatMember < ApplicationRecord
   	(ChatMember.find_by_id(user.id)) ? true : false
   end
 
-  private
-    def quizz_start_stop
-      if ChatMember.any?
-        Quizz.start
-      elsif Quizz.running?
-        Quizz.stop
-      end
-    end
+  def self.only_host_user_exists?
+    ChatMember.count == 1 && ChatMember.first.user.username == "Ведущий"
+  end
+
+  def self.only_one_user_exists?
+    ChatMember.count == 1 && ChatMember.first.user.username != "Ведущий"
+  end
+
 end
