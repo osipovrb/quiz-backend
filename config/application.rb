@@ -37,7 +37,7 @@ module Quiz
     config.hosts << "quiz.quarasique.ru"
 
     # Rack-attack
-    #config.middleware.use Rack::Attack
+    config.middleware.use Rack::Attack
 
     # Active Job
     config.active_job.queue_adapter = :resque

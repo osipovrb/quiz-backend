@@ -49,7 +49,7 @@ group :test do
 end
 
 gem 'rack-cors'
-#gem 'rack-attack'
+gem 'rack-attack'
 gem 'redis'
 #gem 'sidekiq'
 gem 'resque'
