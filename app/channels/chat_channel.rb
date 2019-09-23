@@ -8,11 +8,11 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def start
-    unless current_user.instance_variable_defined?(:@chat_channel_started)
+    #unless current_user.instance_variable_defined?(:@chat_channel_started)
       broadcast_last_messages
       stream_from 'chat'
-      current_user.instance_variable_set(:@chat_channel_started, true)
-    end
+      #current_user.instance_variable_set(:@chat_channel_started, true)
+    #end
   end
 
   def message(data)

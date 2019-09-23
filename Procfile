@@ -1,3 +1,3 @@
 web: pumactl start
 redis: redis-server
-worker: sidekiq
+worker: QUEUE=* rake resque:work

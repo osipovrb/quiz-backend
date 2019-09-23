@@ -51,4 +51,5 @@ end
 gem 'rack-cors'
 gem 'rack-attack'
 gem 'redis'
-gem 'sidekiq'
+#gem 'sidekiq'
+gem 'resque'
