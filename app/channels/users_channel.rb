@@ -1,10 +1,16 @@
 class UsersChannel < ApplicationCable::Channel
   def subscribed
-    broadcast_all_members
-    stream_from 'users'
   end
 
   def unsubscribed
+  end
+
+  def start
+    unless current_user.instance_variable_defined?(:@users_channel_started)
+      broadcast_all_members
+      stream_from 'users'
+      current_user.instance_variable_set(:@chat_channel_started, true)
+    end
   end
 
   private

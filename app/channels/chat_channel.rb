@@ -1,12 +1,18 @@
 class ChatChannel < ApplicationCable::Channel
   def subscribed
     ChatMember.subscribe(current_user)
-    broadcast_last_messages
-    stream_from 'chat'
   end
 
   def unsubscribed
     ChatMember.unsubscribe(current_user)
+  end
+
+  def start
+    unless current_user.instance_variable_defined?(:@chat_channel_started)
+      broadcast_last_messages
+      stream_from 'chat'
+      current_user.instance_variable_set(:@chat_channel_started, true)
+    end
   end
 
   def message(data)
@@ -23,6 +29,6 @@ class ChatChannel < ApplicationCable::Channel
         }
       end
       stream_for current_user
-      broadcast_to current_user, last_messages.to_json
+      broadcast_to current_user, { last_messages: last_messages }.to_json
     end
 end
