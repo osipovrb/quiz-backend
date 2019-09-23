@@ -29,6 +29,6 @@ class ChatChannel < ApplicationCable::Channel
         }
       end
       stream_for current_user
-      broadcast_to current_user, { event: 'last_messages', last_messages: last_messages }.to_json
+      broadcast_to current_user, { event: 'last_messages', last_messages: last_messages }
     end
 end

@@ -8,6 +8,6 @@ class ChatMessageBroadcastJob < ApplicationJob
   		username: message.user.username, 
   		created_at: message.created_at.utc.to_i
   	}
-    ActionCable.server.broadcast "chat", payload.to_json
+    ActionCable.server.broadcast "chat", payload
   end
 end

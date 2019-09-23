@@ -3,6 +3,6 @@ class UsersBroadcastJob < ApplicationJob
 
   def perform(username, event, score) # type = join || leave || score
   	payload = { event: event, username: username, score: score }
-    ActionCable.server.broadcast "users", payload.to_json
+    ActionCable.server.broadcast "users", payload
   end
 end
