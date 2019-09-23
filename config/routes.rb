@@ -13,4 +13,7 @@ Rails.application.routes.draw do
   #require 'sidekiq/web'
   #mount Sidekiq::Web => '/sidekiq'
 
+  require 'resque/server'
+  mount Resque::Server, at: '/jobs'
+
 end
