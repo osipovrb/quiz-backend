@@ -10,7 +10,7 @@ RSpec.describe ChatMessageBroadcastJob, type: :job do
   		expected_payload = { 
         content: message.content, 
         username: message.user.username, 
-        created_at: message.created_at.utc.to_i
+        created_at: message.created_at.utc.to_f
       }
       expect {
         ChatMessageBroadcastJob.perform_now(message.id)
