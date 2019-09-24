@@ -26,7 +26,7 @@ class ChatChannel < ApplicationCable::Channel
 
   def start_stream # REFACTOR: move to ApplicationCable::Channel class
     unless current_user.instance_variable_defined?(:@chat_channel_started)
-      stream_from 'users'
+      stream_from 'chat'
       current_user.instance_variable_set(:@chat_channel_started, true)
     end
   end
