@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   mount ActionCable.server => '/cable'
 
-  require 'resque/server'
-  mount Resque::Server, at: '/jobs'
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
 
 end

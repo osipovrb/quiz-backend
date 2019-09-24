@@ -40,6 +40,6 @@ module Quiz
     config.middleware.use Rack::Attack
 
     # Active Job
-    config.active_job.queue_adapter = :resque
+    config.active_job.queue_adapter = :sidekiq
   end
 end
