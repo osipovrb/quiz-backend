@@ -1,5 +1,6 @@
 class ChatChannel < ApplicationCable::Channel
   def subscribed
+    stream_for current_user
     ChatMember.subscribe(current_user)
   end
 
@@ -7,20 +8,7 @@ class ChatChannel < ApplicationCable::Channel
     ChatMember.unsubscribe(current_user)
   end
 
-  def start
-    #unless current_user.instance_variable_defined?(:@chat_channel_started)
-      broadcast_last_messages
-      stream_from 'chat'
-      #current_user.instance_variable_set(:@chat_channel_started, true)
-    #end
-  end
-
-  def message(data)
-    ChatMessage.create(user: current_user, content: data['content'])
-  end
-
-  private
-    def broadcast_last_messages(messages_num: 30)
+  def get_last_messages
       last_messages = ChatMessage.includes(:user).limit(messages_num).order(id: :desc).map do |m|
         {
           content: m.content,
@@ -28,7 +16,19 @@ class ChatChannel < ApplicationCable::Channel
           created_at: m.created_at.utc.to_i
         }
       end
-      stream_for current_user
       broadcast_to current_user, { event: 'last_messages', last_messages: last_messages }
+      stream_from 'chat'
+  end
+
+  def send_message(data)
+    ChatMessage.create(user: current_user, content: data['content'])
+  end
+
+  def start_stream # REFACTOR: move to ApplicationCable::Channel class
+    unless current_user.instance_variable_defined?(:@chat_channel_started)
+      stream_from 'users'
+      current_user.instance_variable_set(:@chat_channel_started, true)
     end
+  end
+
 end

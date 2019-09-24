@@ -61,13 +61,12 @@ class Quizz
   def self.start
     Redis.new.set 'quiz', 'running'
     QuizzJob.perform_later
-    TickJob.perform_later
   end
 
   def self.stop
     r = Redis.new
-    r.publish :quiz, 'stop'
     r.set 'quiz', 'stopped'
+    r.publish :quiz, 'stop'
   end
 
   def self.running?

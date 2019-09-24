@@ -1,6 +1,6 @@
 class Rack::Attack
 
-#  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new 
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new 
 
   ### Throttle Spammy Clients ###
 
