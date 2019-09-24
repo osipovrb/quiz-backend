@@ -17,7 +17,6 @@ class ChatChannel < ApplicationCable::Channel
         }
       end
       broadcast_to current_user, { event: 'last_messages', last_messages: last_messages }
-      stream_from 'chat'
   end
 
   def send_message(data)
