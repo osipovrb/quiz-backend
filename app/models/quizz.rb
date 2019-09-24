@@ -59,11 +59,13 @@ class Quizz
 
   # Start/stop methods
   def self.start
+    send_message quiz_started
     Redis.new.set 'quiz', 'running'
     QuizzJob.perform_later
   end
 
   def self.stop
+    send_message quiz_stopped
     r = Redis.new
     r.set 'quiz', 'stopped'
     r.publish :quiz, 'stop'
@@ -111,4 +113,9 @@ class Quizz
     def timeout_message
       "Время вышло! Никто не ответил правильно. Ответ: #{@current_question.answer}. Следующий вопрос через 5 секунд..."
     end
+
+    def quiz_started; "Викторина запущена. Вопрос через 5 секунд..."; end
+
+    def quiz_stopped; "Викторина остановлена."; end
+  
 end
