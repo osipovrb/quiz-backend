@@ -1,7 +1,8 @@
 class ChatMessageBroadcastJob < ApplicationJob
   queue_as :default
 
-  def perform(message)
+  def perform(message_id)
+    message = ChatMessage.find(message_id)
   	payload = { 
       event: 'message',
   		content: message.content, 
