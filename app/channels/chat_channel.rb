@@ -9,7 +9,7 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def get_last_messages
-      last_messages = ChatMessage.includes(:user).limit(messages_num).order(id: :desc).map do |m|
+      last_messages = ChatMessage.includes(:user).limit(30).order(id: :desc).map do |m|
         {
           content: m.content,
           username: m.user.username,
