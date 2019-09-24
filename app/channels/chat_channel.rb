@@ -13,7 +13,7 @@ class ChatChannel < ApplicationCable::Channel
         {
           content: m.content,
           username: m.user.username,
-          created_at: m.created_at.utc.to_f
+          created_at: m.created_at.utc.to_f 
         }
       end
       broadcast_to current_user, { event: 'last_messages', last_messages: last_messages }
