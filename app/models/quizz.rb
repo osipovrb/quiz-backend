@@ -2,7 +2,6 @@ class Quizz
 
   def initialize
     @host_user = init_host_user
-    ChatMember.subscribe(@host_user) unless ChatMember.subscribed?(@host_user)
     # TODO: заглушка
     @current_question = Riddle.get_random_riddle
     @timer = 5

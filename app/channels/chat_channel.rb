@@ -23,12 +23,4 @@ class ChatChannel < ApplicationCable::Channel
   def send_message(data)
     ChatMessage.create(user: current_user, content: data['content'])
   end
-
-#  def start_stream # REFACTOR: move to ApplicationCable::Channel class
-#    unless current_user.instance_variable_defined?(:@chat_channel_started)
-      
-#      current_user.instance_variable_set(:@chat_channel_started, true)
-#    end
-#  end
-
 end

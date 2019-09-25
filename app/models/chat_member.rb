@@ -3,35 +3,37 @@ class ChatMember < ApplicationRecord
 
 
   def self.subscribe(user)
-		member = ChatMember.find_or_create_by(user_id: user.id)
-    member.connections_num += 1
-    member.save
+		member = self.increment_connections_num(user)
     UsersBroadcastJob.perform_later(user.username, :join, user.score) if member.connections_num == 1
-    Quizz.start if self.only_one_user_exists?
+    Quizz.start if ChatMember.count == 1
   end
 
   def self.unsubscribe(user)
-    if member = find_by(user_id: user.id)
-      if (member.connections_num -= 1) <= 0
-    	  member.destroy
-        UsersBroadcastJob.perform_later(user.username, :leave, user.score) 
-        Quizz.stop if self.only_host_user_exists?
-      else
-        member.save
-      end
+    member = self.decrement_connections_num(user)
+    if member.connections_num <= 0
+    	member.destroy
+      UsersBroadcastJob.perform_later(user.username, :leave, user.score) 
+      Quizz.stop unless self.any?
     end
   end
 
   def self.subscribed?(user)
-  	(ChatMember.find_by_id(user.id)) ? true : false
+  	ChatMember.exists(user.id)
   end
 
-  def self.only_host_user_exists?
-    ChatMember.count == 1 && ChatMember.first.user.username == "Ведущий"
-  end
+# -- helpers
+  private
+    def self.increment_connections_num(user)
+      member = ChatMember.find_or_create_by(user_id: user.id)
+      member.connections_num += 1
+      member.save && member
+    end
 
-  def self.only_one_user_exists?
-    ChatMember.count == 1 && ChatMember.first.user.username != "Ведущий"
-  end
-
+    def self.decrement_connections_num(user)
+      member = ChatMember.find_by(user_id: user.id) 
+      unless member.nil?
+        member.connections_num -= 1
+        member.save && member
+      end
+    end
 end
