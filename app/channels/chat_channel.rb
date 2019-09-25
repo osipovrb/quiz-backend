@@ -1,7 +1,8 @@
 class ChatChannel < ApplicationCable::Channel
   def subscribed
-    stream_for current_user
     ChatMember.subscribe(current_user)
+    stream_for current_user
+    stream_from 'chat'
   end
 
   def unsubscribed
@@ -23,11 +24,11 @@ class ChatChannel < ApplicationCable::Channel
     ChatMessage.create(user: current_user, content: data['content'])
   end
 
-  def start_stream # REFACTOR: move to ApplicationCable::Channel class
-    unless current_user.instance_variable_defined?(:@chat_channel_started)
-      stream_from 'chat'
-      current_user.instance_variable_set(:@chat_channel_started, true)
-    end
-  end
+#  def start_stream # REFACTOR: move to ApplicationCable::Channel class
+#    unless current_user.instance_variable_defined?(:@chat_channel_started)
+      
+#      current_user.instance_variable_set(:@chat_channel_started, true)
+#    end
+#  end
 
 end
