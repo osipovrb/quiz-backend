@@ -13,7 +13,7 @@ class ChatMember < ApplicationRecord
     if member.connections_num <= 0
     	member.destroy
       UsersBroadcastJob.perform_later(user.username, :leave, user.score) 
-      Quizz.stop unless self.any?
+      Quizz.stop if ChatMember.count == 0
     end
   end
 
