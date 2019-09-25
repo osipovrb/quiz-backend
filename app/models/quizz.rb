@@ -9,9 +9,7 @@ class Quizz
   end
 
   def process(message)
-    if message.start_with?('stop')
-      ChatMember.unsubscribe(@host_user)
-    elsif message.start_with?('chat_message') && @state == :accepting_answers
+    if message.start_with?('chat_message') && @state == :accepting_answers
       _, user_id, content = message.split(':', 3)
       check_answer(user_id, content)
     elsif message == 'tick'
