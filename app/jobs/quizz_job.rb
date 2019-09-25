@@ -6,11 +6,8 @@ class QuizzJob < ApplicationJob
   	quizz = Quizz.new
   	redis.subscribe(:quiz) do |on|
   		on.message do |_, message|
-        if message == 'stop'
-          redis.unsubscribe
-        else
-          quizz.process message
-        end
+        redis.unsubscribe if message == 'stop'
+        quizz.process message
   		end
   	end
   end
