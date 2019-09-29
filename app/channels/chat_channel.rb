@@ -36,7 +36,7 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   private
-    def broacast_user_event(event)
+    def broadcast_user_event(event)
       UsersBroadcastJob.perform_later(current_user.username, event, current_user.score)
     end
 
