@@ -1,7 +1,7 @@
 module ApplicationCable
   class Channel < ActionCable::Channel::Base
 
-    def self.connected_users(channel_class) 
+    def self.connected_users_for(channel_class) 
       ids = Channel.get_subscription_ids_for channel_class 
       User.find(ids)
     end
@@ -11,7 +11,7 @@ module ApplicationCable
     end
 
     private
-      def self.get_subscription_ids_for(channell_class, identifier_class = User)
+      def self.get_subscription_ids_for(channel_class, identifier_class = User)
         pubsub = ActionCable.server.pubsub
         channel_with_prefix = pubsub.send(:channel_with_prefix, channel_class.channel_name)
         channels = pubsub.send(:redis_connection).pubsub('channels', "#{channel_with_prefix}:*")

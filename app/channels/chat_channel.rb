@@ -26,6 +26,6 @@ class ChatChannel < ApplicationCable::Channel
 
   private
     def all_connected_users
-      Channel.connected_users(ChatChannel)
+      ApplicationCable::Channel.connected_users_for(ChatChannel)
     end
 end
