@@ -6,8 +6,16 @@ module ApplicationCable
       User.find(ids)
     end
 
+    def self.connections_num(channel_class)
+      Channel.get_subscription_ids_for(channel_class).count
+    end
+
     def self.user_connected?(channel_class, user)
       Channel.get_subscription_ids_for(channel_class).include?(user.id.to_s)
+    end
+
+    def self.any_connections?(channel_class)
+      Channel.get_subscription_ids_for(channel_class).any?
     end
 
     private

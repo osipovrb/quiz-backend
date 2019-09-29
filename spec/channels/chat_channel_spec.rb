@@ -6,6 +6,6 @@ RSpec.describe ChatChannel, type: :channel do
     stub_connection current_user: user
     subscribe
     expect(subscription).to be_confirmed
-    expect(ChatMember.subscribed?(user)).to eq true
+    expect(ApplicationCable::Channel.user_connected?(user)).to eq true
   end
 end

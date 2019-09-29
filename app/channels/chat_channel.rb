@@ -1,13 +1,24 @@
 class ChatChannel < ApplicationCable::Channel
+  before_subscribe do
+    @first_connection = ApplicationCable::Channel.user_connected?(ChatChannel, current_user) ? false : true
+  end
+
+  after_subscribe do
+    broadcast_user_event(:join) if @first_connection
+    Quizz.start if ApplicationCable::Channel.connections_num(ChatChannel) == 1
+  end
+  
+  after_unsubscribe do 
+    broadcast_user_event(:leave) unless ApplicationCable::Channel.user_connected?(ChatChannel, current_user)
+    Quizz.stop unless ApplicationCable::Channel.any_connections?(ChatChannel)
+  end
+
   def subscribed
-    ChatMember.subscribe(current_user)
     stream_for current_user
     stream_from 'chat'
   end
 
-  def unsubscribed
-    ChatMember.unsubscribe(current_user)
-  end
+  def unsubscribed; end
 
   def get_last_messages
       last_messages = ChatMessage.includes(:user).limit(30).order(id: :desc).map do |m|
@@ -23,5 +34,10 @@ class ChatChannel < ApplicationCable::Channel
   def send_message(data)
     ChatMessage.create(user: current_user, content: data['content'])
   end
+
+  private
+    def broacast_user_event(event)
+      UsersBroadcastJob.perform_later(current_user.username, event, current_user.score)
+    end
 
 end
