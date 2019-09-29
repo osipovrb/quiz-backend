@@ -23,4 +23,9 @@ class ChatChannel < ApplicationCable::Channel
   def send_message(data)
     ChatMessage.create(user: current_user, content: data['content'])
   end
+
+  private
+    def all_connected_users
+      Channel.connected_users(ChatChannel)
+    end
 end

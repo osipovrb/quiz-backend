@@ -8,7 +8,7 @@ class UsersChannel < ApplicationCable::Channel
   end
 
   def get_all_members
-    members = ChatMember.includes(:user).pluck(:username, :score).map { |u| { username: u.first, score: u.last } }
+    members = ChatChannel.connected_users.pluck(:username, :score).map { |u| { username: u.first, score: u.last } }
     broadcast_to current_user, { event: 'current_members', current_members: members }
   end
 end

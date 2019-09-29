@@ -1,6 +1,7 @@
 class QuizzJob < ApplicationJob
   queue_as :default
-
+  sidekiq_options retry: false
+  
   def perform() 
   	redis = Redis.new
   	quizz = Quizz.new
