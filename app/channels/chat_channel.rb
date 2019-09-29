@@ -11,8 +11,7 @@ class ChatChannel < ApplicationCable::Channel
   end
   
   after_unsubscribe do 
-    broadcast_user_event(:leave) unless ApplicationCable::Channel.user_connected?(ChatChannel, current_user)
-    Quizz.stop unless ApplicationCable::Channel.any_connections?(ChatChannel)
+
   end
 
   def subscribed
@@ -20,7 +19,10 @@ class ChatChannel < ApplicationCable::Channel
     stream_from 'chat'
   end
 
-  def unsubscribed; end
+  def unsubscribed
+    broadcast_user_event(:leave) unless ApplicationCable::Channel.user_connected?(ChatChannel, current_user)
+    Quizz.stop unless ApplicationCable::Channel.any_connections?(ChatChannel)
+  end
 
   def get_last_messages
       last_messages = ChatMessage.includes(:user).limit(30).order(id: :desc).map do |m|
