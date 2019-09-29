@@ -5,7 +5,7 @@ class ChatChannel < ApplicationCable::Channel
 
   after_subscribe do
     broadcast_user_event(:join) if @first_connection
-    if Quizz.running? == false && ApplicationCable::Channel.connections_num(ChatChannel) == 1
+    if @first_connection && ApplicationCable::Channel.connections_num(ChatChannel) == 1
       Quizz.start
     end 
   end
