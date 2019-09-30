@@ -6,12 +6,16 @@ class Quizz
     @current_question = Riddle.get_random_riddle
     @timer = 5
     @state = :waiting_for_question
+    @redis = Redis.new
+    start_ticker
   end
 
   def process(message)
     if message.start_with?('chat_message') && @state == :accepting_answers
       _, user_id, content = message.split(':', 3)
       check_answer(user_id, content)
+    elsif message == 'stop'
+      stop_ticker
     elsif message == 'tick'
       if @timer == 30 && @state == :accepting_answers && @current_question.answer.length >= 3
         send_message(hint_message)
@@ -71,6 +75,18 @@ class Quizz
   end
 
   private
+
+    def start_ticker
+      @ticker ||= Concurrent::TimerTask.new(execution_interval: 1) do        
+        @redis.publish(:quiz, 'tick')
+      end
+      @ticker.execute
+    end
+
+    def stop_ticker
+      @ticker.shutdown
+    end
+
     def send_message(content)
       ChatMessage.create(user: @host_user, content: content)
     end
