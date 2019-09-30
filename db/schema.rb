@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_29_114554) do
+ActiveRecord::Schema.define(version: 2019_09_30_035811) do
+
+  create_table "channel_subscriptions", force: :cascade do |t|
+    t.string "channel"
+    t.integer "subscriptions_num", default: 0
+    t.integer "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_channel_subscriptions_on_user_id"
+  end
 
   create_table "chat_messages", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -37,5 +46,6 @@ ActiveRecord::Schema.define(version: 2019_09_29_114554) do
     t.index ["token"], name: "index_users_on_token", unique: true
   end
 
+  add_foreign_key "channel_subscriptions", "users"
   add_foreign_key "chat_messages", "users"
 end

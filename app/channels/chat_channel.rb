@@ -1,27 +1,30 @@
 class ChatChannel < ApplicationCable::Channel
-  before_subscribe do
-    @first_connection = ApplicationCable::Channel.user_connected?(ChatChannel, current_user) ? false : true
-  end
-
-  after_subscribe do
-    broadcast_user_event(:join) if @first_connection
-    if @first_connection && ApplicationCable::Channel.connections_num(ChatChannel) == 1
-      Quizz.start
-    end 
-  end
-  
-  after_unsubscribe do 
-
-  end
 
   def subscribed
+    subscription = subscribe
+    if subscription.single? # first tab/browser/etc connection
+      broadcast_user_event :join
+      Quizz.start if subscribers_count == 1
+    end
     stream_for current_user
     stream_from 'chat'
   end
 
   def unsubscribed
-    broadcast_user_event(:leave) unless ApplicationCable::Channel.user_connected?(ChatChannel, current_user)
-    Quizz.stop unless ApplicationCable::Channel.any_connections?(ChatChannel)
+    subscription = unsubscribe
+    if subscription.none? # user disconnected from all tabs/browsers/etc
+      subscription.destroy
+      broadcast_user_event :leave
+      Quizz.stop if subscribers_count == 0
+    end
+  end
+
+  def get_all_members
+    members = ChannelSubscription.where(channel: 'ChatChannel').
+      includes(:user).
+      pluck(:username, :score).
+      map { |u| { username: u.first, score: u.last } } 
+    broadcast_to current_user, { event: 'current_members', current_members: members }
   end
 
   def get_last_messages
@@ -42,6 +45,27 @@ class ChatChannel < ApplicationCable::Channel
   private
     def broadcast_user_event(event)
       UsersBroadcastJob.perform_later(current_user.username, event, current_user.score)
+    end
+
+    def alter_subscription(action = nil)
+      subscription = ChannelSubscription.find_or_create_by(channel: 'ChatChannel', user: current_user)
+      case action
+        when :join then subscription.subscriptions_num += 1 && subscription.save
+        when :leave then subscription.subscriptions_num -= 1 && subscription.save
+      end
+      subscription
+    end
+
+    def subscribe
+      alter_subscription :join
+    end
+
+    def unsubscribe
+      alter_subscription :leave
+    end
+    
+    def subscribers_count
+      ChannelSubscription.where(channel: 'ChatChannel').count 
     end
 
 end

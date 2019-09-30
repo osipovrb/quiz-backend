@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   has_one :chat_member, dependent: :destroy
   has_many :chat_messages, dependent: :destroy
+  has_many :channel_subscriptions, dependent: :destroy
 
   validates :username, presence: true, length: { minimum: 4, maximum: 20 }, uniqueness: true, exclusion: { in: %w(Ведущий) }
   validates :password, presence: true, length: { maximum: 72 }
