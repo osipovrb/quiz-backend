@@ -50,8 +50,12 @@ class ChatChannel < ApplicationCable::Channel
     def alter_subscription(action = nil)
       subscription = ChannelSubscription.find_or_create_by(channel: 'ChatChannel', user: current_user)
       case action
-        when :join then subscription.subscriptions_num += 1 && subscription.save
-        when :leave then subscription.subscriptions_num -= 1 && subscription.save
+        when :join 
+          subscription.subscriptions_num += 1 
+          subscription.save
+        when :leave 
+          subscription.subscriptions_num -= 1
+          subscription.save
       end
       subscription
     end
